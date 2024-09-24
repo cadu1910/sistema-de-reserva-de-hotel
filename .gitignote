@@ -1,0 +1,31 @@
+# Ignorar arquivos temporários do banco de dados MySQL
+*.sql~
+*.sql.bak
+
+# Ignorar configurações locais de IDEs/editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignorar arquivos de sistema operacionais
+.DS_Store
+Thumbs.db
+
+# Ignorar logs
+*.log
+
+# Ignorar dependências que podem ser geradas por pacotes e ambientes virtuais
+node_modules/
+venv/
+.env
+
+# Ignorar binários
+*.exe
+*.dll
+*.so
+*.bin
+*.o
+*.a
+*.pyc
+*.pyo
