@@ -1,0 +1,141 @@
+-- Criação do banco de dados
+DROP DATABASE IF EXISTS sistema_reserva_hotel;
+CREATE DATABASE sistema_reserva_hotel;
+
+-- Seleção do banco de dados
+USE sistema_reserva_hotel;
+
+-- Criação da tabela de clientes
+CREATE TABLE clientes (
+  cliente_id INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(100),
+  email VARCHAR(100),
+  telefone VARCHAR(20),
+  endereco VARCHAR(255)
+);
+
+-- Criação da tabela de quartos
+CREATE TABLE quartos (
+  quarto_id INT PRIMARY KEY AUTO_INCREMENT,
+  numero_quarto INT UNIQUE,
+  tipo VARCHAR(50),
+  preco_diaria DECIMAL(10, 2),
+  status VARCHAR(20) -- Disponível, Ocupado, Manutenção
+);
+
+-- Criação da tabela de reservas
+CREATE TABLE reservas (
+  reserva_id INT PRIMARY KEY AUTO_INCREMENT,
+  cliente_id INT,
+  quarto_id INT,
+  data_checkin DATE,
+  data_checkout DATE,
+  status_reserva VARCHAR(20), -- Confirmada, Cancelada, Concluída
+  FOREIGN KEY (cliente_id) REFERENCES clientes(cliente_id),
+  FOREIGN KEY (quarto_id) REFERENCES quartos(quarto_id)
+);
+
+-- Criação da tabela de pagamentos
+CREATE TABLE pagamentos (
+  pagamento_id INT PRIMARY KEY AUTO_INCREMENT,
+  reserva_id INT,
+  valor_total DECIMAL(10, 2),
+  metodo_pagamento VARCHAR(50), -- Cartão, Dinheiro, Transferência
+  data_pagamento DATE,
+  FOREIGN KEY (reserva_id) REFERENCES reservas(reserva_id)
+);
+
+-- Criação da tabela de serviços adicionais
+CREATE TABLE servicos_adicionais (
+  servico_id INT PRIMARY KEY AUTO_INCREMENT,
+  descricao VARCHAR(255),
+  preco DECIMAL(10, 2)
+);
+
+-- Criação da tabela de reservas de serviços adicionais
+CREATE TABLE reservas_servicos (
+  reserva_servico_id INT PRIMARY KEY AUTO_INCREMENT,
+  reserva_id INT,
+  servico_id INT,
+  quantidade INT,
+  FOREIGN KEY (reserva_id) REFERENCES reservas(reserva_id),
+  FOREIGN KEY (servico_id) REFERENCES servicos_adicionais(servico_id)
+);
+
+-- Inserção de dados na tabela de clientes
+INSERT INTO clientes (nome, email, telefone, endereco) VALUES
+('Carlos Silva', 'carlos@email.com', '11999999999', 'Rua A, 123'),
+('Fernanda Costa', 'fernanda@email.com', '11988888888', 'Rua B, 456'),
+('João Pereira', 'joao@email.com', '11977777777', 'Rua C, 789');
+
+-- Inserção de dados na tabela de quartos
+INSERT INTO quartos (numero_quarto, tipo, preco_diaria, status) VALUES
+(101, 'Standard', 150.00, 'Disponível'),
+(102, 'Deluxe', 250.00, 'Disponível'),
+(103, 'Suite', 400.00, 'Disponível');
+
+-- Inserção de dados na tabela de serviços adicionais
+INSERT INTO servicos_adicionais (descricao, preco) VALUES
+('Café da manhã', 20.00),
+('Estacionamento', 15.00),
+('Spa', 50.00);
+
+-- Inserção de uma reserva
+INSERT INTO reservas (cliente_id, quarto_id, data_checkin, data_checkout, status_reserva) VALUES
+(1, 101, '2024-10-10', '2024-10-15', 'Confirmada');
+
+-- Inserção de um pagamento
+INSERT INTO pagamentos (reserva_id, valor_total, metodo_pagamento, data_pagamento) VALUES
+(1, 750.00, 'Cartão', '2024-10-10');
+
+-- Inserção de serviços adicionais reservados
+INSERT INTO reservas_servicos (reserva_id, servico_id, quantidade) VALUES
+(1, 1, 3),  -- 3 cafés da manhã
+(1, 2, 1);  -- 1 vaga de estacionamento
+
+-- Consulta para exibir todas as reservas com detalhes dos clientes e quartos
+SELECT 
+  reservas.reserva_id,
+  clientes.nome AS cliente,
+  quartos.numero_quarto,
+  quartos.tipo AS tipo_quarto,
+  reservas.data_checkin,
+  reservas.data_checkout,
+  reservas.status_reserva
+FROM reservas
+JOIN clientes ON reservas.cliente_id = clientes.cliente_id
+JOIN quartos ON reservas.quarto_id = quartos.quarto_id;
+
+-- Consulta para exibir o total de serviços adicionais utilizados em uma reserva
+SELECT 
+  reservas.reserva_id,
+  servicos_adicionais.descricao AS servico,
+  reservas_servicos.quantidade,
+  (servicos_adicionais.preco * reservas_servicos.quantidade) AS valor_total
+FROM reservas_servicos
+JOIN servicos_adicionais ON reservas_servicos.servico_id = servicos_adicionais.servico_id
+JOIN reservas ON reservas_servicos.reserva_id = reservas.reserva_id
+WHERE reservas.reserva_id = 1;
+
+-- Consulta para exibir o total de reservas de cada quarto
+SELECT 
+  quartos.numero_quarto,
+  COUNT(reservas.reserva_id) AS total_reservas
+FROM reservas
+JOIN quartos ON reservas.quarto_id = quartos.quarto_id
+GROUP BY quartos.numero_quarto;
+
+-- Atualização do status de um quarto após check-in
+UPDATE quartos
+SET status = 'Ocupado'
+WHERE quarto_id = 101;
+
+-- Atualização do status de uma reserva para Concluída
+UPDATE reservas
+SET status_reserva = 'Concluída'
+WHERE reserva_id = 1;
+
+-- Exclusão de uma reserva e seus pagamentos e serviços relacionados
+DELETE FROM reservas_servicos WHERE reserva_id = 1;
+DELETE FROM pagamentos WHERE reserva_id = 1;
+DELETE FROM reservas WHERE reserva_id = 1;
