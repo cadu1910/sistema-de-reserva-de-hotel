@@ -1,0 +1,83 @@
+# Sistema de Reserva de Hotel
+
+Este projeto é um sistema básico de gerenciamento de reservas de hotel, que permite gerenciar clientes, quartos, reservas, pagamentos e serviços adicionais.
+
+## Estrutura do Banco de Dados
+
+O banco de dados `sistema_reserva_hotel` é composto pelas seguintes tabelas:
+
+- **clientes**: Armazena informações sobre os clientes.
+- **quartos**: Armazena informações sobre os quartos disponíveis no hotel.
+- **reservas**: Gerencia as reservas feitas pelos clientes.
+- **pagamentos**: Armazena informações sobre os pagamentos relacionados às reservas.
+- **servicos_adicionais**: Armazena os serviços extras que os clientes podem contratar.
+- **reservas_servicos**: Relaciona as reservas com os serviços adicionais contratados.
+
+## Funcionalidades
+
+- Cadastro de clientes.
+- Cadastro de quartos com diferentes tipos e status.
+- Gestão de reservas de quartos, incluindo check-in e check-out.
+- Pagamentos associados a reservas.
+- Adição de serviços extras, como café da manhã e estacionamento.
+- Consultas detalhadas para visualizar reservas, pagamentos e serviços adicionais.
+
+## Como Executar
+
+1. Clone este repositório:
+    ```bash
+    git clone https://github.com/seu-usuario/sistema-reserva-hotel.git
+    ```
+
+2. Acesse o diretório do projeto:
+    ```bash
+    cd sistema-reserva-hotel
+    ```
+
+3. Execute o arquivo SQL `sistema_reserva_hotel.sql` no seu SGBD MySQL para criar as tabelas e inserir os dados de exemplo.
+
+4. Acesse o banco de dados:
+    ```sql
+    USE sistema_reserva_hotel;
+    ```
+
+5. Realize consultas, inserções ou atualizações conforme necessário.
+
+## Consultas e Operações
+
+- Para exibir todas as reservas com detalhes dos clientes e quartos:
+    ```sql
+    SELECT reservas.reserva_id, clientes.nome AS cliente, quartos.numero_quarto, reservas.data_checkin, reservas.data_checkout
+    FROM reservas
+    JOIN clientes ON reservas.cliente_id = clientes.cliente_id
+    JOIN quartos ON reservas.quarto_id = quartos.quarto_id;
+    ```
+
+- Para atualizar o status de um quarto para "Ocupado" após o check-in:
+    ```sql
+    UPDATE quartos SET status = 'Ocupado' WHERE quarto_id = 101;
+    ```
+
+## Tecnologias Utilizadas
+
+- **MySQL**: Sistema de gerenciamento de banco de dados relacional.
+
+## Melhorias Futuras
+
+- Implementar uma interface gráfica ou API para interagir com o sistema de reservas.
+- Adicionar funcionalidades de relatórios financeiros e estatísticas de ocupação.
+- Melhorar a gestão de disponibilidade de quartos com integração de calendários.
+
+## Contribuição
+
+Contribuições são bem-vindas! Para contribuir:
+
+1. Faça um fork do projeto.
+2. Crie uma branch com sua nova funcionalidade (`git checkout -b feature/nova-funcionalidade`).
+3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`).
+4. Faça um push para a branch (`git push origin feature/nova-funcionalidade`).
+5. Abra um pull request.
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais informações.
